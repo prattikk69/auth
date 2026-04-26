@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FireBase Auth</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="favicon_io/site.webmanifest">
+    <style>
+              *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+        --bg: #080c0a;
+        --green: #00ff88;
+        --green-dim: #00ff8840;
+        --green-muted: #00ff8890;
+        --red: #ff2d55;
+        --white: #e8f5ef;
+        --scanline: rgba(0,255,136,0.03);
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--green);
+        font-family: 'Share Tech Mono', monospace;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+    }
+    .container{
+        border: solid var(--green-muted);
+        padding: 20px;
+        max-width: 60vw;
+        border-radius: 2px;
+        animation-delay: 0;
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+    }
+    h1{
+        border-bottom: solid .5px var(--green-muted);
+        margin-bottom: 10px;
+    }
+    input{
+        background-color: var(--bg);
+        color: var(--green);
+        border: solid .5px var(--green-muted);
+        padding: 10px;
+        border-radius: 2px;
+        transition: .2s;
+        margin: 5px;
+        outline: none;
+        animation-delay: 1s;
+    }
+    #email{
+        animation-delay: .5s;
+    }
+    #password{
+        animation-delay: 1s;
+    }
+    input::placeholder{
+        color: var(--green-dim);
+        font-family: sans-serif;
+    }
+    input:focus, input:hover{
+        border-color: var(--green);
+    }
+    button{
+        font-family: 'Share Tech Mono', monospace;
+        margin: 5px;
+        cursor: pointer;
+        opacity: 0;
+        animation-delay: 2s;
+    }
+    #registerBtn{
+        background-color: var(--bg);
+        color: var(--green);
+        border: solid .5px;
+        padding: 10px;
+        border-radius: 2px;
+        transition: .2s;
+    }
+    #registerBtn:hover{
+        transform: translateY(-2px);
+        box-shadow: 0 5px 5px var(--green-dim);
+        background-color: var(--green-muted);
+    }
+    #acc{
+        background-color: var(--bg);
+        color: var(--green);
+        border: solid .5px;
+        padding: 10px;
+        border-radius: 2px;
+        transition: .2s;
+    }
+    #acc:hover{
+        transform: translateY(-2px);
+        box-shadow: 0 5px 5px var(--green-dim);
+        background-color: var(--green-muted);
+    }
+    .status-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11px;
+        color: var(--green-muted);
+        letter-spacing: 0.1em;
+        animation: lineAppear 0.4s 3.8s forwards;
+    }
+    .status-dot{
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: var(--red);
+        display: inline-block;
+        margin-right: 6px;
+        animation: statusBlink 2s ease-in-out infinite;
+    }
+    #togPass{
+        color: var(--green-dim);
+        cursor: pointer;
+    }
+    #togPass:hover{
+        color: var(--green);
+        display: inline-block;
+    }
+    @keyframes statusBlink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.2; }
+    }
+    .display{
+        animation: popUp 1.75s forwards;
+        opacity: 1;
+    }
+    @keyframes popUp{
+        0%{
+            transform: translateY(10px);
+            opacity: .5;
+        }
+        100%{
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    .hopin{
+        opacity: 1;
+        animation: ghost 1s forwards;
+    }
+    @keyframes ghost {
+        0%{
+            scale: .5;
+            opacity: .2;
+        }
+    }
+    .errorInput{
+        border-color: var(--red);
+        box-shadow:0px 1px 1px var(--red);
+        color: var(--red);
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Create a new account</h1>
+        <input type="email" name="email" id="email" placeholder="Enter your email address" required>
+        <input type="password" name="password" id="password" required placeholder="Set password">
+        <input type="password" name="re-password" id="re-password" required placeholder="Re-type the password">
+        <p id="togPass">-show password-</p>
+        <button id="registerBtn">Create account</button>
+        <p style="font-size: .6rem;">already have an account?</p>
+        <button id="acc">Log in</button>
+        <div class="status-bar">
+            <span><span class="status-dot"></span>Z-Axis</span>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script type="module">
+        
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";        // Import the functions you need from the SDKs you need
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+        apiKey: "AIzaSyCHQffqc28ndnzNscJ8TiF4zeZ5TTY4GQU",
+        authDomain: "fir-auth-a7a92.firebaseapp.com",
+        projectId: "fir-auth-a7a92",
+        storageBucket: "fir-auth-a7a92.firebasestorage.app",
+        messagingSenderId: "990109906889",
+        appId: "1:990109906889:web:4b5f79b039451b334b5a18",
+        measurementId: "G-GK8BCJZJ9E"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+
+        
+        const registerBtn = document.getElementById('registerBtn');
+            registerBtn.addEventListener('click',()=>{
+            const auth = getAuth();
+            const email = document.getElementById('email');
+            const password = document.getElementById('password');
+            const re_password = document.getElementById('re-password');
+            if(!email.value || !password.value || !re_password.value){
+                if(!email.value){
+                    email.classList.add("errorInput");
+                }
+                if(!password.value){
+                    password.classList.add("errorInput");
+                }
+                if(!re_password.value){
+                    re_password.classList.add("errorInput");
+                }
+                alert("Fill all the details.")
+                return;
+            }
+                if(password.value == re_password.value){
+                    createUserWithEmailAndPassword(auth, email.value, password.value)
+                .then((userCredential) => {
+                    // Signed up 
+                    const user = userCredential.user;
+                    alert("Account creation successful");
+                    email.value = "";
+                    password.value = "";
+                    re_password.value = "";
+                    window.location.href = "login.html"
+                    // ...
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    alert(errorMessage);
+                    // ..
+                });
+            }
+            else{
+                password.classList.add("errorInput");
+                re_password.classList.add("errorInput");
+            }
+            })
+
+        function appear(){
+            const btns = document.querySelectorAll('button');
+            btns.forEach( btn =>{
+                btn.classList.add("display");
+            })
+            const container = document.querySelector(".container");
+            container.classList.add("hopin");
+            const inputs = document.querySelectorAll('input');
+        }
+        appear();
+        function setFocus(){
+            const email = document.getElementById("email");
+            email.focus();
+        }
+        setTimeout(()=>{
+            setFocus();
+        },3000);
+
+        const emailInput = document.getElementById('email');
+        emailInput.addEventListener('input', () => {
+            if (emailInput.value.includes("@")) {
+                emailInput.classList.remove("errorInput");
+            } else {
+                emailInput.classList.add("errorInput");
+            }
+        });
+
+        const togPass = document.getElementById('togPass');
+        togPass.addEventListener('click',()=>{
+            const togPass = document.getElementById('togPass');
+            const password = document.getElementById('password');
+            const re_password = document.getElementById('re-password');
+            if(password.type === 'password'){
+            togPass.innerHTML = "-hide password-";
+            password.type = 'text';
+            re_password.type = 'text';
+        }
+        else{
+            togPass.innerHTML = "-show password-";
+            password.type = 'password'; 
+            re_password.type = 'password';
+        }
+    });
+        const acc = document.getElementById('acc');
+        acc.addEventListener('click',()=>{
+            window.location.href = "login.html";
+        })
+    </script>
+</body>
+</html>

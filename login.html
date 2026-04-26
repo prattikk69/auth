@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FireBase Authentication</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="favicon_io/site.webmanifest">
+    <style>
+              *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+        --bg: #080c0a;
+        --green: #00ff88;
+        --green-dim: #00ff8840;
+        --green-muted: #00ff8890;
+        --red: #ff2d55;
+        --white: #e8f5ef;
+        --scanline: rgba(0,255,136,0.03);
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--green);
+        font-family: 'Share Tech Mono', monospace;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+    }
+    .container{
+        border: solid var(--green-muted);
+        padding: 20px;
+        max-width: 60vw;
+        border-radius: 2px;
+        animation-delay: 0;
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+    }
+    h1{
+        border-bottom: solid .5px var(--green-muted);
+        margin-bottom: 10px;
+    }
+    input{
+        background-color: var(--bg);
+        color: var(--green);
+        border: solid .5px var(--green-muted);
+        padding: 10px;
+        border-radius: 2px;
+        transition: .2s;
+        margin: 5px;
+        outline: none;
+        animation-delay: 1s;
+    }
+    #email{
+        animation-delay: .5s;
+    }
+    #password{
+        animation-delay: 1s;
+    }
+    input::placeholder{
+        color: var(--green-dim);
+        font-family: sans-serif;
+    }
+    input:focus, input:hover{
+        border-color: var(--green);
+    }
+    button{
+        font-family: 'Share Tech Mono', monospace;
+        margin: 5px;
+        cursor: pointer;
+        opacity: 0;
+        animation-delay: 2s;
+    }
+    #signinBtn{
+        background-color: var(--bg);
+        color: var(--green);
+        border: solid .5px;
+        padding: 10px;
+        border-radius: 2px;
+        transition: .2s;
+    }
+    #newAcc{
+        background-color: var(--bg);
+        color: var(--green);
+        border: solid .5px;
+        padding: 10px;
+        border-radius: 2px;
+        transition: .2s;
+    }
+    #newAcc:hover{
+        transform: translateY(-2px);
+        box-shadow: 0 5px 5px var(--green-dim);
+        background-color: var(--green-muted);
+    }
+    
+    #signinBtn:hover{
+        transform: translateY(-2px);
+        box-shadow: 0 5px 5px var(--green-dim);
+        background-color: var(--green-muted);
+    }
+    .status-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11px;
+        color: var(--green-muted);
+        letter-spacing: 0.1em;
+        animation: lineAppear 0.4s 3.8s forwards;
+    }
+    .status-dot{
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: var(--red);
+        display: inline-block;
+        margin-right: 6px;
+        animation: statusBlink 2s ease-in-out infinite;
+    }
+    #togPass{
+        color: var(--green-dim);
+        cursor: pointer;
+    }
+    #togPass:hover{
+        color: var(--green);
+        display: inline-block;
+    }
+    @keyframes statusBlink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.2; }
+    }
+    .display{
+        animation: popUp 1.75s forwards;
+        opacity: 1;
+    }
+    @keyframes popUp{
+        0%{
+            transform: translateY(10px);
+            opacity: .5;
+        }
+        100%{
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    .hopin{
+        opacity: 1;
+        animation: ghost 1s forwards;
+    }
+    @keyframes ghost {
+        0%{
+            scale: .5;
+            opacity: .2;
+        }
+    }
+    .errorInput{
+        border-color: var(--red);
+        box-shadow:0px 1px 1px var(--red);
+        color: var(--red);
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sign in to your account</h1>
+        <input type="email" name="email" id="email" placeholder="Enter your email address" required>
+        <input type="password" name="password" id="password" required placeholder="Enter your password">
+        <p id="togPass">-show password-</p>
+        <button id="signinBtn">Sign in</button>
+        <p style="font-size: .6rem;">Don't have an account?</p>
+        <button id="newAcc">Create a new account</button>
+        <div class="status-bar">
+            <span><span class="status-dot"></span>Z-Axis</span>
+        </div>
+    </div>
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    
+    const firebaseConfig = {
+        apiKey: "AIzaSyCHQffqc28ndnzNscJ8TiF4zeZ5TTY4GQU",
+        authDomain: "fir-auth-a7a92.firebaseapp.com",
+        projectId: "fir-auth-a7a92",
+        storageBucket: "fir-auth-a7a92.firebasestorage.app",
+        messagingSenderId: "990109906889",
+        appId: "1:990109906889:web:4b5f79b039451b334b5a18",
+        measurementId: "G-GK8BCJZJ9E"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const signBtn = document.getElementById('signinBtn');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+
+    signBtn.addEventListener('click', () => {
+        // Use .value to get the strings from the inputs
+        const email = emailInput.value;
+        const password = passwordInput.value;
+
+        signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                alert("Sign in successful");
+                window.location.href = "main.html";
+            })
+            .catch((error) => {
+                alert(error.message);
+            });
+    });
+
+    // Toggle Password Visibility Logic (Missing in your original JS)
+    const togPass = document.getElementById('togPass');
+    togPass.addEventListener('click', () => {
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            togPass.textContent = "-hide password-";
+        } else {
+            passwordInput.type = "password";
+            togPass.textContent = "-show password-";
+        }
+    });
+
+    // Email validation styling
+    emailInput.addEventListener('input', () => {
+        if (emailInput.value.includes('@')) {
+            emailInput.classList.remove('errorInput');
+        } else {
+            emailInput.classList.add('errorInput');
+        }
+    });
+
+    document.getElementById('newAcc').addEventListener('click', () => {
+        window.location.href = "signup.html";
+    });
+            function appear(){
+            const btns = document.querySelectorAll('button');
+            btns.forEach( btn =>{
+                btn.classList.add("display");
+            })
+            const container = document.querySelector(".container");
+            container.classList.add("hopin");
+            const inputs = document.querySelectorAll('input');
+        }
+        appear();
+        function setFocus(){
+            const email = document.getElementById("email");
+            email.focus();
+        }
+        setTimeout(()=>{
+            setFocus();
+        },3000);
+</script>
+
+</body>
+</html>

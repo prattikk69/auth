@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auth Complete</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="favicon_io/site.webmanifest">
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+        --bg: #080c0a;
+        --green: #00ff88;
+        --green-dim: #00ff8840;
+        --green-muted: #00ff8890;
+        --red: #ff2d55;
+        --white: #e8f5ef;
+        --scanline: rgba(0,255,136,0.03);
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--green);
+        font-family: 'Share Tech Mono', monospace;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+    }
+    .container{
+        border: solid var(--green-muted);
+        padding: 20px;
+        max-width: 60vw;
+        border-radius: 2px;
+        animation-delay: 0;
+        display: flex;
+        flex-direction: column;
+        text-align: center;
+    }
+    button{
+        font-family: 'Share Tech Mono', monospace;
+        margin: 5px;
+        cursor: pointer;
+        border: 1px solid var(--green-dim);
+        background-color: var(--green-muted);
+    }
+    button:hover{
+        background-color: var(--green);
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome gay boii</h1>
+        <p>Does your mother know that you are gay?</p>
+        <button onclick="yes()">Yes</button>
+        <button onclick="no()">No</button>
+    </div>
+
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCHQffqc28ndnzNscJ8TiF4zeZ5TTY4GQU",
+        authDomain: "fir-auth-a7a92.firebaseapp.com",
+        projectId: "fir-auth-a7a92",
+        storageBucket: "fir-auth-a7a92.firebasestorage.app",
+        messagingSenderId: "990109906889",
+        appId: "1:990109906889:web:4b5f79b039451b334b5a18",
+        measurementId: "G-GK8BCJZJ9E"
+    };
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth();
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        const uid = user.uid;
+    } else {
+        alert("Please sign in first.");
+        window.location.href = "login.html";
+    }
+    });
+</script>
+<script>
+        function yes(){
+        alert("Not olny her but I knew it too.");
+    }
+    function no(){
+        alert("But I knew it that you're a cute gay boiii");
+    }
+</script>
+</body>
+</html>
