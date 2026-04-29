@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FireBase Authentication</title>
+    <title>FireBase Login</title>
     <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
@@ -44,7 +44,6 @@
     h1{
         border-bottom: solid .5px var(--green-muted);
         margin-bottom: 10px;
-         line-height: 1;
     }
     input{
         background-color: var(--bg);
@@ -162,9 +161,68 @@
         box-shadow:0px 1px 1px var(--red);
         color: var(--red);
     }
+    
+    .loadingContainer{
+        position: absolute;
+        pointer-events: none;
+        background-color: rgba(255, 255, 255, 0.3);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 999;
+        height: 100vh;
+        width: 100vw;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(8px) saturate(190%);
+        display: none;
+    }
+    .loadingContainer.show{
+        display: flex;
+    }
+    .loader {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            position: relative;
+            animation: rotate 1s linear infinite
+        }
+        .loader::before , .loader::after {
+            content: "";
+            box-sizing: border-box;
+            position: absolute;
+            inset: 0px;
+            border-radius: 50%;
+            border: 5px solid var(--red);
+            animation: prixClipFix 2s linear infinite ;
+        }
+        .loader::after{
+            border-color: var(--green);
+            animation: prixClipFix 2s linear infinite , rotate 0.5s linear infinite reverse;
+            inset: 6px;
+        }
+
+        @keyframes rotate {
+            0%   {transform: rotate(0deg)}
+            100%   {transform: rotate(360deg)}
+        }
+
+        @keyframes prixClipFix {
+            0%   {clip-path:polygon(50% 50%,0 0,0 0,0 0,0 0,0 0)}
+            25%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
+            50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
+            75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
+            100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
+        }
     </style>
 </head>
 <body>
+    <div class="loadingContainer" id="loader">
+        <span class="loader"></span>
+        <p>eakxin pakh vai...</p>
+    </div>
     <div class="container">
         <h1>Sign in to your account</h1>
         <input type="email" name="email" id="email" placeholder="Enter your email address" required>
@@ -198,18 +256,30 @@
     const signBtn = document.getElementById('signinBtn');
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
+    const loader = document.getElementById('loader');
 
     signBtn.addEventListener('click', () => {
         // Use .value to get the strings from the inputs
         const email = emailInput.value;
         const password = passwordInput.value;
+        if(email === ""){
+            emailInput.classList.add('errorInput');
+            return;
+        }
+        if(password === ""){
+            passwordInput.classList.add('errorInput');
+            return;
+        }
 
+        loader.classList.add('show');
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 alert("Sign in successful");
                 window.location.href = "main.html";
+                loader.classList.remove('show');
             })
             .catch((error) => {
+                loader.classList.remove('show');
                 alert(error.message);
             });
     });
