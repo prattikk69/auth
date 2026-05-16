@@ -3,248 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FireBase Sign up</title>
+    <title>Firebase Auth</title>
     <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
     <link rel="manifest" href="favicon_io/site.webmanifest">
     <style>
-              *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-        --bg: #080c0a;
-        --green: #00ff88;
-        --green-dim: #00ff8840;
-        --green-muted: #00ff8890;
-        --red: #ff2d55;
-        --white: #e8f5ef;
-        --scanline: rgba(0,255,136,0.03);
-    }
+        *, *::before, *::after { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
+        :root {
+            --bg: #080c0a;
+            --green: #00ff88;
+            --green-dim: #00ff8840;
+            --green-muted: #00ff8890;
+            --red: #ff2d55;
+            --white: #e8f5ef;
+            --scanline: rgba(0,255,136,0.03);
+        }
 
-    body {
-        background: var(--bg);
-        color: var(--green);
-        font-family: 'Share Tech Mono', monospace;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-        position: relative;
-    }
-    .container{
-        border: solid var(--green-muted);
-        padding: 20px;
-        max-width: 60vw;
-        border-radius: 2px;
-        animation-delay: 0;
-        display: flex;
-        flex-direction: column;
-        text-align: center;
-    }
-    h1{
-        border-bottom: solid .5px var(--green-muted);
-        margin-bottom: 10px;
-    }
-    input{
-        background-color: var(--bg);
-        color: var(--green);
-        border: solid .5px var(--green-muted);
-        padding: 10px;
-        border-radius: 2px;
-        transition: .2s;
-        margin: 5px;
-        outline: none;
-        animation-delay: 1s;
-    }
-    #email{
-        animation-delay: .5s;
-    }
-    #password{
-        animation-delay: 1s;
-    }
-    input::placeholder{
-        color: var(--green-dim);
-        font-family: sans-serif;
-    }
-    input:focus, input:hover{
-        border-color: var(--green);
-    }
-    button{
-        font-family: 'Share Tech Mono', monospace;
-        margin: 5px;
-        cursor: pointer;
-        opacity: 0;
-        animation-delay: 2s;
-    }
-    #registerBtn{
-        background-color: var(--bg);
-        color: var(--green);
-        border: solid .5px;
-        padding: 10px;
-        border-radius: 2px;
-        transition: .2s;
-    }
-    #registerBtn:hover{
-        transform: translateY(-2px);
-        box-shadow: 0 5px 5px var(--green-dim);
-        background-color: var(--green-muted);
-    }
-    #acc{
-        background-color: var(--bg);
-        color: var(--green);
-        border: solid .5px;
-        padding: 10px;
-        border-radius: 2px;
-        transition: .2s;
-    }
-    #acc:hover{
-        transform: translateY(-2px);
-        box-shadow: 0 5px 5px var(--green-dim);
-        background-color: var(--green-muted);
-    }
-    .status-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 11px;
-        color: var(--green-muted);
-        letter-spacing: 0.1em;
-        animation: lineAppear 0.4s 3.8s forwards;
-    }
-    .status-dot{
-        width: 6px; height: 6px;
-        border-radius: 50%;
-        background: var(--red);
-        display: inline-block;
-        margin-right: 6px;
-        animation: statusBlink 2s ease-in-out infinite;
-    }
-    #togPass{
-        color: var(--green-dim);
-        cursor: pointer;
-    }
-    #togPass:hover{
-        color: var(--green);
-        display: inline-block;
-    }
-    @keyframes statusBlink {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.2; }
-    }
-    .display{
-        animation: popUp 1.75s forwards;
-        opacity: 1;
-    }
-    @keyframes popUp{
-        0%{
-            transform: translateY(10px);
-            opacity: .5;
+        body {
+            background: var(--bg);
+            color: var(--green);
+            font-family: 'Share Tech Mono', monospace, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
         }
-        100%{
-            transform: translateY(0);
-            opacity: 1;
+
+        .container {
+            border: solid 1px var(--green-muted);
+            padding: 20px;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            opacity: 0;
         }
-    }
-    .hopin{
-        opacity: 1;
-        animation: ghost 1s forwards;
-    }
-    @keyframes ghost {
-        0%{
-            scale: .5;
-            opacity: .2;
+
+        h1 {
+            font-size: 1.5rem;
+            border-bottom: solid 1px var(--green-muted);
+            margin-bottom: 15px;
+            padding-bottom: 5px;
         }
-    }
-    .errorInput{
-        border-color: var(--red);
-        box-shadow:0px 1px 1px var(--red);
-        color: var(--red);
-    }
-    .loadingContainer{
-        position: absolute;
-        pointer-events: none;
-        background-color: rgba(255, 255, 255, 0.3);
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 999;
-        height: 100vh;
-        width: 100vw;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        backdrop-filter: blur(8px) saturate(190%);
-        display: none;
-    }
-    .loadingContainer.show{
-        display: flex;
-    }
-    .loader {
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input {
+            background-color: var(--bg);
+            color: var(--green);
+            border: solid 1px var(--green-muted);
+            padding: 10px;
+            border-radius: 2px;
+            transition: 0.2s ease;
+            margin: 5px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        input::placeholder {
+            color: var(--green-dim);
+        }
+
+        input:focus {
+            border-color: var(--green);
+            box-shadow: 0 0 5px var(--green-dim);
+        }
+
+        button {
+            font-family: inherit;
+            margin: 8px 0;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 2px;
+            transition: 0.2s ease;
+            background-color: var(--bg);
+            color: var(--green);
+            border: solid 1px var(--green);
+            opacity: 0;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px var(--green-dim);
+            background-color: var(--green-dim);
+        }
+
+        .secondary-text {
+            font-size: 0.75rem;
+            margin-top: 10px;
+            color: var(--green);
+            opacity: 0.7;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--green-muted);
+            letter-spacing: 0.1em;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid var(--green-dim);
+        }
+
+        .status-dot {
+            width: 6px; 
+            height: 6px;
+            border-radius: 50%;
+            background: var(--red);
+            display: inline-block;
+            margin-right: 6px;
+            animation: statusBlink 2s ease-in-out infinite;
+        }
+
+        #togPass {
+            color: var(--green-dim);
+            cursor: pointer;
+            font-size: 0.85rem;
+            margin: 5px 0;
+            user-select: none;
+        }
+
+        #togPass:hover {
+            color: var(--green);
+        }
+
+        @keyframes statusBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Animations triggered via JS */
+        .display {
+            animation: popUp 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes popUp {
+            0% { transform: translateY(15px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .hopin {
+            animation: ghost 0.5s ease-out forwards;
+        }
+
+        @keyframes ghost {
+            0% { transform: scale(0.95); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .errorInput {
+            border-color: var(--red) !important;
+            box-shadow: 0px 0px 6px var(--red) !important;
+            color: var(--red);
+        }
+
+        /* Fullscreen Loader */
+        .loadingContainer {
+            position: fixed;
+            background-color: rgba(8, 12, 10, 0.8);
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 999;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .loadingContainer.show {
+            display: flex;
+        }
+
+        .loader {
             width: 48px;
             height: 48px;
             border-radius: 50%;
             position: relative;
-            animation: rotate 1s linear infinite
+            animation: rotate 1s linear infinite;
+            margin-bottom: 15px;
         }
-        .loader::before , .loader::after {
+
+        .loader::before, .loader::after {
             content: "";
             box-sizing: border-box;
             position: absolute;
             inset: 0px;
             border-radius: 50%;
-            border: 5px solid var(--red);
-            animation: prixClipFix 2s linear infinite ;
+            border: 4px solid var(--red);
+            animation: prixClipFix 2s linear infinite;
         }
-        .loader::after{
+
+        .loader::after {
             border-color: var(--green);
-            animation: prixClipFix 2s linear infinite , rotate 0.5s linear infinite reverse;
+            animation: prixClipFix 2s linear infinite, rotate 0.5s linear infinite reverse;
             inset: 6px;
         }
 
         @keyframes rotate {
-            0%   {transform: rotate(0deg)}
-            100%   {transform: rotate(360deg)}
+            100% { transform: rotate(360deg); }
         }
 
         @keyframes prixClipFix {
-            0%   {clip-path:polygon(50% 50%,0 0,0 0,0 0,0 0,0 0)}
-            25%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0)}
-            50%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%)}
-            75%  {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%)}
-            100% {clip-path:polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0)}
+            0%   { clip-path: polygon(50% 50%,0 0,0 0,0 0,0 0,0 0); }
+            25%  { clip-path: polygon(50% 50%,0 0,100% 0,100% 0,100% 0,100% 0); }
+            50%  { clip-path: polygon(50% 50%,0 0,100% 0,100% 100%,100% 100%,100% 100%); }
+            75%  { clip-path: polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 100%); }
+            100% { clip-path: polygon(50% 50%,0 0,100% 0,100% 100%,0 100%,0 0); }
         }
     </style>
 </head>
 <body>
+
     <div class="loadingContainer" id="loader">
         <span class="loader"></span>
-        <p>eakxin pakh vai...</p>
+        <p>Ekchin pakh vai...</p>
     </div>
-    <div class="container">
-        <h1>Create a new account</h1>
-        <input type="email" name="email" id="email" placeholder="Enter your email address" required>
-        <input type="password" name="password" id="password" required placeholder="Set password">
-        <input type="password" name="re-password" id="re-password" required placeholder="Re-type the password">
-        <p id="togPass">-show password-</p>
-        <button id="registerBtn">Create account</button>
-        <p style="font-size: .6rem;">already have an account?</p>
-        <button id="acc">Log in</button>
+
+    <div class="container" id="mainContainer">
+        <h1>Create an Account</h1>
+        
+        <form id="registerForm" onsubmit="return false;">
+            <input type="email" id="email" placeholder="Enter your email address" required autocomplete="email">
+            <input type="password" id="password" placeholder="Set password" required autocomplete="new-password">
+            <input type="password" id="re-password" placeholder="Re-type the password" required autocomplete="new-password">
+            <p id="togPass">-show password-</p>
+            
+            <button type="submit" id="registerBtn">Create account</button>
+        </form>
+
+        <p class="secondary-text">already have an account?</p>
+        <button id="accBtn">Log in</button>
+
         <div class="status-bar">
             <span><span class="status-dot"></span>Z-Axis</span>
         </div>
     </div>
-    <script src="script.js"></script>
-    <script type="module">
-        
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";        // Import the functions you need from the SDKs you need
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";        // TODO: Add SDKs for Firebase products that you want to use
-        // https://firebase.google.com/docs/web/setup#available-libraries
 
-        // Your web app's Firebase configuration
-        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-        const firebaseConfig = {
+    <!-- Firebase SDK Modules -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+        // Replace these placeholder configurations with environment variables or your actual config keys safely safely
+    const firebaseConfig = {
         apiKey: "AIzaSyCHQffqc28ndnzNscJ8TiF4zeZ5TTY4GQU",
         authDomain: "fir-auth-a7a92.firebaseapp.com",
         projectId: "fir-auth-a7a92",
@@ -252,107 +268,83 @@
         messagingSenderId: "990109906889",
         appId: "1:990109906889:web:4b5f79b039451b334b5a18",
         measurementId: "G-GK8BCJZJ9E"
-        };
+    };
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
 
+        // DOM Elements
         const loader = document.getElementById('loader');
-        const registerBtn = document.getElementById('registerBtn');
-            registerBtn.addEventListener('click',()=>{
-            const auth = getAuth();
-            const email = document.getElementById('email');
-            const password = document.getElementById('password');
-            const re_password = document.getElementById('re-password');
-            if(!email.value || !password.value || !re_password.value){
-                if(!email.value){
-                    email.classList.add("errorInput");
-                }
-                if(!password.value){
-                    password.classList.add("errorInput");
-                }
-                if(!re_password.value){
-                    re_password.classList.add("errorInput");
-                }
-                alert("Fill all the details.")
+        const registerForm = document.getElementById('registerForm');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const rePasswordInput = document.getElementById('re-password');
+        const togPass = document.getElementById('togPass');
+        const accBtn = document.getElementById('accBtn');
+        const mainContainer = document.getElementById('mainContainer');
+        const actionButtons = document.querySelectorAll('button');
+
+        // Initial Entry Animations
+        function runIntroAnimations() {
+            mainContainer.classList.add("hopin");
+            actionButtons.forEach(btn => btn.classList.add("display"));
+            setTimeout(() => emailInput.focus(), 800);
+        }
+        runIntroAnimations();
+
+        // Clear errors instantly when typing
+        const inputs = [emailInput, passwordInput, rePasswordInput];
+        inputs.forEach(input => {
+            input.addEventListener('input', () => {
+                input.classList.remove('errorInput');
+            });
+        });
+
+        // Form Submit Logic
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Client-side quick checks
+            if (passwordInput.value !== rePasswordInput.value) {
+                passwordInput.classList.add("errorInput");
+                rePasswordInput.classList.add("errorInput");
+                alert("Passwords do not match!");
                 return;
             }
+
+            // Show Spinner only after upfront sync checks pass
             loader.classList.add('show');
-                if(password.value == re_password.value){
-                    createUserWithEmailAndPassword(auth, email.value, password.value)
-                .then((userCredential) => {
-                    // Signed up 
-                    const user = userCredential.user;
-                    alert("Account creation successful");
-                    email.value = "";
-                    password.value = "";
-                    re_password.value = "";
-                    loader.classList.remove('show');
-                    window.location.href = "login.html"
-                    // ...
-                })
-                .catch((error) => {
-                    loader.classList.remove('show');
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
-                    alert(errorMessage);
-                    // ..
-                });
-            }
-            else{
-                password.classList.add("errorInput");
-                re_password.classList.add("errorInput");
-            }
-            })
 
-        function appear(){
-            const btns = document.querySelectorAll('button');
-            btns.forEach( btn =>{
-                btn.classList.add("display");
-            })
-            const container = document.querySelector(".container");
-            container.classList.add("hopin");
-            const inputs = document.querySelectorAll('input');
-        }
-        appear();
-        function setFocus(){
-            const email = document.getElementById("email");
-            email.focus();
-        }
-        setTimeout(()=>{
-            setFocus();
-        },3000);
-
-        const emailInput = document.getElementById('email');
-        emailInput.addEventListener('input', () => {
-            if (emailInput.value.includes("@")) {
-                emailInput.classList.remove("errorInput");
-            } else {
-                emailInput.classList.add("errorInput");
+            try {
+                await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+                alert("Account creation successful!");
+                registerForm.reset();
+                window.location.href = "login.html";
+            } catch (error) {
+                alert(error.message);
+                if (error.code === 'auth/weak-password') {
+                    passwordInput.classList.add("errorInput");
+                } else if (error.code === 'auth/invalid-email' || error.code === 'auth/email-already-in-use') {
+                    emailInput.classList.add("errorInput");
+                }
+            } finally {
+                loader.classList.remove('show');
             }
         });
 
-        const togPass = document.getElementById('togPass');
-        togPass.addEventListener('click',()=>{
-            const togPass = document.getElementById('togPass');
-            const password = document.getElementById('password');
-            const re_password = document.getElementById('re-password');
-            if(password.type === 'password'){
-            togPass.innerHTML = "-hide password-";
-            password.type = 'text';
-            re_password.type = 'text';
-        }
-        else{
-            togPass.innerHTML = "-show password-";
-            password.type = 'password'; 
-            re_password.type = 'password';
-        }
-    });
-        const acc = document.getElementById('acc');
-        acc.addEventListener('click',()=>{
+        // Password Visibility Toggle
+        togPass.addEventListener('click', () => {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            rePasswordInput.type = isPassword ? 'text' : 'password';
+            togPass.innerText = isPassword ? "-hide password-" : "-show password-";
+        });
+
+        // Navigation Link
+        accBtn.addEventListener('click', () => {
             window.location.href = "login.html";
-        })
+        });
     </script>
 </body>
 </html>
